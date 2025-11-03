@@ -26,7 +26,7 @@ app.get('/api/data', async (req, res) => {
         private_key: GOOGLE_PRIVATE_KEY,
       },
       scopes: 'https://www.googleapis.com/auth/spreadsheets',
-  .js });
+    });
 
     const client = await auth.getClient();
     const sheets = google.sheets({ version: 'v4', auth: client });
@@ -61,7 +61,10 @@ app.get('/api/data', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Error fetching from Google Sheets:', error.message);
-    res.status(500).send('Server Error');
+Next Steps:
+-**Deploy and Test**: Try deploying this updated file to Render.
+-**Check Logs**: If it fails again, check the "Logs" tab in Render for the *new* error message.
+-**Environment Variables**: Double-check that all your `.env` variables (`GOOGLE_PROJECT_ID`, `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY`) are correctly added to the "Environment" tab in Render.s.status(500).send('Server Error');
   }
 });
 
@@ -71,3 +74,4 @@ app.get('/api/data', async (req, res) => {
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => console.log(`🚀 Server is live at http://localhost:${PORT}`));
+
