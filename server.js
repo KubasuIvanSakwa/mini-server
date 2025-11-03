@@ -1,18 +1,16 @@
 const express = require('express');
 const { google } = require('googleapis');
-const cors = require('cors'); // Import the cors middleware
-require('dotenv').config(); // Load .env variables at the top
+const cors = require('cors'); 
+require('dotenv').config(); 
 
 const app = express();
 
-// Use cors middleware to allow requests from your React app
 app.use(cors());
 
 // --- Load Credentials from .env ---
 const GOOGLE_PROJECT_ID = process.env.GOOGLE_PROJECT_ID;
 const GOOGLE_CLIENT_EMAIL = process.env.GOOGLE_CLIENT_EMAIL;
 
-// **FIX 1: Made this check even safer**
 const GOOGLE_PRIVATE_KEY_RAW = process.env.GOOGLE_PRIVATE_KEY;
 let GOOGLE_PRIVATE_KEY = undefined;
 if (typeof GOOGLE_PRIVATE_KEY_RAW === 'string' && GOOGLE_PRIVATE_KEY_RAW.length > 0) {
@@ -23,22 +21,20 @@ if (typeof GOOGLE_PRIVATE_KEY_RAW === 'string' && GOOGLE_PRIVATE_KEY_RAW.length 
 }
 
 
-// --- NEW: Home Screen Endpoint ---
 app.get('/', (req, res) => {
-  console.log('✅ DEBUG: Hit / route'); // Added log
-  // Send back a simple HTML page
+  // simple HTML page
   res.send(`
-      <html style="font-family: sans-serif; padding: 2rem; background: #000;">
+       <html style="font-family: sans-serif; padding: 2rem; background: #000;">
       <head><title>API Home</title></head>
       <body style="color:white; max-width: 600px; margin: auto; background: #2e2e2e; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
         <h1>Mini Server Runs 🚀</h1>
         <p>Mini-server Home</p>
         
         <h2 style="border-bottom: 2px solid #eee; padding-bottom: 8px;">API Endpoints:</h2>
-        <ul>
+        <ul style="font-size: 20px">
           <li>
-              <a href="/api/data">
-                <strong>GET /api/data</strong>
+              <a href="/api/data" style="text-decoration: none; color: white;">
+                <strong><span style="color: #323d96">GET</span> /api/data</strong>
               </a>
             <p>Fetches data from your Google Sheet.</p>
           </li>
@@ -49,11 +45,10 @@ app.get('/', (req, res) => {
 });
 
 
-// This is the API endpoint your React app will call
+//API endpoint 
 app.get('/api/data', async (req, res) => {
-  console.log('✅ DEBUG: Hit /api/data route'); // Added log
   try {
-    // **FIX 3: Check if credentials are even loaded**
+
     if (!GOOGLE_PROJECT_ID || !GOOGLE_CLIENT_EMAIL || !GOOGLE_PRIVATE_KEY) {
       console.error('❌ Missing one or more Google credentials in environment variables.');
       return res.status(500).send('Server configuration error: Missing credentials.');
@@ -71,28 +66,25 @@ app.get('/api/data', async (req, res) => {
     const client = await auth.getClient();
     const sheets = google.sheets({ version: 'v4', auth: client });
 
-    // --- UPDATED SPREADSHEET ID ---
+    // --- SPREADSHEET ID ---
     const spreadsheetId = '1KKEQw8jbc55ZhH56VV37YDFOdzZZl-zLps6eP75x1RQ';
 
     console.log('Fetching all data from Google Sheets...');
 
-    // --- UPDATED RANGE ---
+    // --- RANGE ---
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'A1:G4321', // Read from cell A1 down to F4321
+      range: 'A1:G4321', 
     });
     
-    // **Graceful handling if sheet is empty**
     const allRows = response.data.values;
     if (!allRows || allRows.length === 0) {
       console.log('✅ Sheet is empty, returning empty array.');
       return res.json([]);
     }
-
-    // Remove the header row from the data
+    
     const dataWithoutHeader = allRows.slice(1);
-
-    // Convert the array of arrays into an array of objects
+    
     const headers = allRows[0];
     const jsonData = dataWithoutHeader.map(row => {
       let rowObject = {};
@@ -101,27 +93,24 @@ app.get('/api/data', async (req, res) => {
       });
       return rowObject;
     });
-
-    console.log('✅ Data fetched successfully! Sending to client.');
+    
     res.json(jsonData);
 
   } catch (error) {
     console.error('❌ Error fetching from Google Sheets:', error.message);
-    // **FIX 2: Add back the error response to the client**
+
     res.status(500).send('Server Error: Could not fetch data from Google Sheets.');
-  // **CRITICAL FIX**: Removed the stray ".js" from this line
+
   }
 });
 
-// **MODIFICATION FOR RENDER**
-// Render provides its own port via the PORT environment variable.
-// We use that if it exists, otherwise we fall back to 3001 for local dev.
+
 const PORT = process.env.PORT || 3001;
 
-// Added a log to show the server is *about* to start
 console.log(`Attempting to start server on port ${PORT}...`);
 
 app.listen(PORT, () => console.log(`🚀 Server is live at http://localhost:${PORT}`));
+
 
 
 
