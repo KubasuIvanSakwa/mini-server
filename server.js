@@ -32,14 +32,14 @@ app.get('/api/data', async (req, res) => {
     const sheets = google.sheets({ version: 'v4', auth: client });
 
     // --- PASTE YOUR SPREADSHEET ID HERE ---
-    const spreadsheetId = '1QRtKALF2yzzh5yMU-ClStTLYX-GSVzuJjJJtJO-7Ed4';
+    const spreadsheetId = '1KKEQw8jbc55ZhH56VV37YDFOdzZZl-zLps6eP75x1RQ';
 
     console.log('Fetching all data from Google Sheets...');
 
     // Read all 4,320 rows from the sheet
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'A1:D4321', // Read from cell A1 down to D4321
+      range: 'A1:F4321', // Read from cell A1 down to D4321
     });
 
     // Remove the header row from the data
@@ -71,3 +71,4 @@ app.get('/api/data', async (req, res) => {
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => console.log(`🚀 Server is live at http://localhost:${PORT}`));
+
