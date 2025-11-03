@@ -28,33 +28,21 @@ app.get('/', (req, res) => {
   console.log('✅ DEBUG: Hit / route'); // Added log
   // Send back a simple HTML page
   res.send(`
-    <html style="font-family: sans-serif; padding: 2rem; background: #f4f4f4;">
+      <html style="font-family: sans-serif; padding: 2rem; background: #000;">
       <head><title>API Home</title></head>
-      <body style="max-width: 600px; margin: auto; background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-        <h1>🚀 Server is Live!</h1>
-        <p>This is the home screen for your Node.js API server.</p>
+      <body style="color:white; max-width: 600px; margin: auto; background: #2e2e2e; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <h1>Mini Server Runs 🚀</h1>
+        <p>Mini-server Home</p>
         
-        <h2 style="border-bottom: 2px solid #eee; padding-bottom: 8px;">Available API Endpoints:</h2>
+        <h2 style="border-bottom: 2px solid #eee; padding-bottom: 8px;">API Endpoints:</h2>
         <ul>
           <li>
-            <strong>GET /api/data</strong>
+              <a href="/api/data">
+                <strong>GET /api/data</strong>
+              </a>
             <p>Fetches data from your Google Sheet.</p>
           </li>
         </ul>
-        
-        <a href="/api/data" style="
-          display: inline-block;
-          padding: 12px 20px;
-          font-size: 16px;
-          font-weight: bold;
-          color: #fff;
-          background-color: #007bff;
-          text-decoration: none;
-          border-radius: 5px;
-          margin-top: 1rem;
-        ">
-          Go to /api/data
-        </a>
       </body>
     </html>
   `);
@@ -134,5 +122,6 @@ const PORT = process.env.PORT || 3001;
 console.log(`Attempting to start server on port ${PORT}...`);
 
 app.listen(PORT, () => console.log(`🚀 Server is live at http://localhost:${PORT}`));
+
 
 
