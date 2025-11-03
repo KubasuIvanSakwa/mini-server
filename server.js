@@ -60,11 +60,7 @@ app.get('/api/data', async (req, res) => {
     res.json(jsonData);
 
   } catch (error) {
-    console.error('❌ Error fetching from Google Sheets:', error.message);
-Next Steps:
--**Deploy and Test**: Try deploying this updated file to Render.
--**Check Logs**: If it fails again, check the "Logs" tab in Render for the *new* error message.
--**Environment Variables**: Double-check that all your `.env` variables (`GOOGLE_PROJECT_ID`, `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY`) are correctly added to the "Environment" tab in Render.s.status(500).send('Server Error');
+    console.error('❌ Error fetching from Google Sheets:', error.message)
   }
 });
 
@@ -74,4 +70,5 @@ Next Steps:
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => console.log(`🚀 Server is live at http://localhost:${PORT}`));
+
 
