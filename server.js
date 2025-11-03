@@ -91,7 +91,7 @@ app.get('/api/data', async (req, res) => {
     // --- UPDATED RANGE ---
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'A1:F4321', // Read from cell A1 down to F4321
+      range: 'A1:G4321', // Read from cell A1 down to F4321
     });
     
     // **Graceful handling if sheet is empty**
@@ -134,4 +134,5 @@ const PORT = process.env.PORT || 3001;
 console.log(`Attempting to start server on port ${PORT}...`);
 
 app.listen(PORT, () => console.log(`🚀 Server is live at http://localhost:${PORT}`));
+
 
