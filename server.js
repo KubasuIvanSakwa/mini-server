@@ -9,14 +9,23 @@ const app = express();
 app.use(cors());
 
 // --- Load Credentials from .env ---
-// Make sure your .env file has these variables
 const GOOGLE_PROJECT_ID = process.env.GOOGLE_PROJECT_ID;
 const GOOGLE_CLIENT_EMAIL = process.env.GOOGLE_CLIENT_EMAIL;
-// Replace escaped newlines (\\n) with actual newlines (\n)
-const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
+
+// **FIX 1: Made this check even safer**
+const GOOGLE_PRIVATE_KEY_RAW = process.env.GOOGLE_PRIVATE_KEY;
+let GOOGLE_PRIVATE_KEY = undefined;
+if (typeof GOOGLE_PRIVATE_KEY_RAW === 'string' && GOOGLE_PRIVATE_KEY_RAW.length > 0) {
+  GOOGLE_PRIVATE_KEY = GOOGLE_PRIVATE_KEY_RAW.replace(/\\n/g, '\n');
+  console.log('✅ GOOGLE_PRIVATE_KEY loaded and formatted.');
+} else {
+  console.warn('⚠️ GOOGLE_PRIVATE_KEY is missing or empty in environment variables.');
+}
+
 
 // --- NEW: Home Screen Endpoint ---
 app.get('/', (req, res) => {
+  console.log('✅ DEBUG: Hit / route'); // Added log
   // Send back a simple HTML page
   res.send(`
     <html style="font-family: sans-serif; padding: 2rem; background: #f4f4f4;">
@@ -54,8 +63,14 @@ app.get('/', (req, res) => {
 
 // This is the API endpoint your React app will call
 app.get('/api/data', async (req, res) => {
+  console.log('✅ DEBUG: Hit /api/data route'); // Added log
   try {
--    // --- Authenticate using environment variables ---
+    // **FIX 3: Check if credentials are even loaded**
+    if (!GOOGLE_PROJECT_ID || !GOOGLE_CLIENT_EMAIL || !GOOGLE_PRIVATE_KEY) {
+      console.error('❌ Missing one or more Google credentials in environment variables.');
+      return res.status(500).send('Server configuration error: Missing credentials.');
+    }
+
     const auth = new google.auth.GoogleAuth({
       credentials: {
         project_id: GOOGLE_PROJECT_ID,
@@ -78,9 +93,15 @@ app.get('/api/data', async (req, res) => {
       spreadsheetId,
       range: 'A1:F4321', // Read from cell A1 down to F4321
     });
+    
+    // **Graceful handling if sheet is empty**
+    const allRows = response.data.values;
+    if (!allRows || allRows.length === 0) {
+      console.log('✅ Sheet is empty, returning empty array.');
+      return res.json([]);
+    }
 
     // Remove the header row from the data
-    const allRows = response.data.values;
     const dataWithoutHeader = allRows.slice(1);
 
     // Convert the array of arrays into an array of objects
@@ -97,8 +118,11 @@ app.get('/api/data', async (req, res) => {
     res.json(jsonData);
 
   } catch (error) {
-    console.error('❌ Error fetching from Google Sheets:', error.message)
-  }
+    console.error('❌ Error fetching from Google Sheets:', error.message);
+    // **FIX 2: Add back the error response to the client**
+    res.status(500).send('Server Error: Could not fetch data from Google Sheets.');
+  // **CRITICAL FIX**: Removed the stray ".js" from this line
+  }
 });
 
 // **MODIFICATION FOR RENDER**
@@ -106,4 +130,8 @@ app.get('/api/data', async (req, res) => {
 // We use that if it exists, otherwise we fall back to 3001 for local dev.
 const PORT = process.env.PORT || 3001;
 
+// Added a log to show the server is *about* to start
+console.log(`Attempting to start server on port ${PORT}...`);
+
 app.listen(PORT, () => console.log(`🚀 Server is live at http://localhost:${PORT}`));
+
