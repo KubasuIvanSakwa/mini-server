@@ -18,28 +18,28 @@ const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
 // This is the API endpoint your React app will call
 app.get('/api/data', async (req, res) => {
   try {
-    // --- Authenticate using environment variables ---
+    // --- Authenticate using environment variables ---
     const auth = new google.auth.GoogleAuth({
       credentials: {
-        project_id: GOOGLE_PROJECT_ID,
-        client_email: GOOGLE_CLIENT_EMAIL,
-        private_key: GOOGLE_PRIVATE_KEY,
-      },
+        project_id: GOOGLE_PROJECT_ID,
+        client_email: GOOGLE_CLIENT_EMAIL,
+        private_key: GOOGLE_PRIVATE_KEY,
+      },
       scopes: 'https://www.googleapis.com/auth/spreadsheets',
-    });
+  .js });
 
     const client = await auth.getClient();
     const sheets = google.sheets({ version: 'v4', auth: client });
 
-    // --- PASTE YOUR SPREADSHEET ID HERE ---
+    // --- UPDATED SPREADSHEET ID ---
     const spreadsheetId = '1KKEQw8jbc55ZhH56VV37YDFOdzZZl-zLps6eP75x1RQ';
 
     console.log('Fetching all data from Google Sheets...');
 
-    // Read all 4,320 rows from the sheet
+    // --- UPDATED RANGE ---
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'A1:F4321', // Read from cell A1 down to D4321
+      range: 'A1:F4321', // Read from cell A1 down to F4321
     });
 
     // Remove the header row from the data
@@ -71,4 +71,3 @@ app.get('/api/data', async (req, res) => {
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => console.log(`🚀 Server is live at http://localhost:${PORT}`));
-
