@@ -15,10 +15,47 @@ const GOOGLE_CLIENT_EMAIL = process.env.GOOGLE_CLIENT_EMAIL;
 // Replace escaped newlines (\\n) with actual newlines (\n)
 const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
 
+// --- NEW: Home Screen Endpoint ---
+app.get('/', (req, res) => {
+  // Send back a simple HTML page
+  res.send(`
+    <html style="font-family: sans-serif; padding: 2rem; background: #f4f4f4;">
+      <head><title>API Home</title></head>
+      <body style="max-width: 600px; margin: auto; background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <h1>🚀 Server is Live!</h1>
+        <p>This is the home screen for your Node.js API server.</p>
+        
+        <h2 style="border-bottom: 2px solid #eee; padding-bottom: 8px;">Available API Endpoints:</h2>
+        <ul>
+          <li>
+            <strong>GET /api/data</strong>
+            <p>Fetches data from your Google Sheet.</p>
+          </li>
+        </ul>
+        
+        <a href="/api/data" style="
+          display: inline-block;
+          padding: 12px 20px;
+          font-size: 16px;
+          font-weight: bold;
+          color: #fff;
+          background-color: #007bff;
+          text-decoration: none;
+          border-radius: 5px;
+          margin-top: 1rem;
+        ">
+          Go to /api/data
+        </a>
+      </body>
+    </html>
+  `);
+});
+
+
 // This is the API endpoint your React app will call
 app.get('/api/data', async (req, res) => {
   try {
-    // --- Authenticate using environment variables ---
+-    // --- Authenticate using environment variables ---
     const auth = new google.auth.GoogleAuth({
       credentials: {
         project_id: GOOGLE_PROJECT_ID,
@@ -70,5 +107,3 @@ app.get('/api/data', async (req, res) => {
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => console.log(`🚀 Server is live at http://localhost:${PORT}`));
-
-
